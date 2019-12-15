@@ -1,0 +1,39 @@
+--- #setup httpd with content
+
+- hosts: content-server
+  become: yes
+  tasks:
+    - name: install httpd
+      yum:
+        name: httpd
+        state: latest
+    - name: Start service httpd, if not started
+      service:
+        name: httpd
+        state: started
+
+    - name: Copy file with owner and permissions
+      copy:
+        src: index.html
+        dest: /var/www/html
+
+- hosts: loadbalancer
+  become: yes
+  tasks:
+    - name: install httpd
+      yum:
+        name: httpd
+        state: latest
+
+    - name: Copy file with owner and permissions
+      copy:
+        owner: apache
+        group: apache
+        src: httpd.conf
+        dest: /etc/httpd/conf/httpd.conf
+        follow: yes
+
+    - name: Start service httpd, if not started
+      service:
+        name: httpd
+        state: started
