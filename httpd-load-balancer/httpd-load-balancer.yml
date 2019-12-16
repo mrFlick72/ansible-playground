@@ -1,6 +1,6 @@
 --- #setup httpd with content
 
-- hosts: content-server
+- hosts: content_server
   become: yes
   tasks:
     - name: install httpd
@@ -14,6 +14,8 @@
 
     - name: Copy file with owner and permissions
       copy:
+        owner: apache
+        group: apache
         src: index.html
         dest: /var/www/html
 
@@ -26,7 +28,7 @@
         state: latest
 
     - name: Copy file with owner and permissions
-      copy:
+      template:
         owner: apache
         group: apache
         src: httpd.conf
@@ -37,3 +39,4 @@
       service:
         name: httpd
         state: started
+

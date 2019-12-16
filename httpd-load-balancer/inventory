@@ -1,0 +1,5 @@
+[content_server]
+put here your servers
+
+[loadbalancer]
+put here your balancer
