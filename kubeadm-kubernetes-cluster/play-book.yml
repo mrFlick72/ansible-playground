@@ -1,0 +1,7 @@
+--- # Kubernetes installation with KubeAdm
+
+- hosts: master_nodes
+  tasks:
+
+- hosts: worker_nodes
+  tasks:
