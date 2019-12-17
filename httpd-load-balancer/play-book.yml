@@ -38,5 +38,6 @@
     - name: Start service httpd, if not started
       service:
         name: httpd
+        enabled: yes
         state: started
 
