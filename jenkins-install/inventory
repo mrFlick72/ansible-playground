@@ -1,5 +1,2 @@
-[master_nodes]
+[master_node]
 put here your master
-
-[worker_nodes]
-put here your worker nodes
