@@ -1,7 +1,26 @@
 --- # Kubernetes installation with KubeAdm
 
-- hosts: master_nodes
+- hosts: master_node
+  become: yes
   tasks:
+    - name: install openjdk
+      yum:
+        name: java-1.8.0-openjdk
+        update_cache: true
+        state: latest
 
-- hosts: worker_nodes
-  tasks:
+    - name: Add the Jenkins repository
+      get_url:
+        url: http://pkg.jenkins-ci.org/redhat/jenkins.repo
+        dest: /etc/yum.repos.d/jenkins.repo
+
+    - name: Import the repo key
+      rpm_key:
+        state: present
+        key: https://jenkins-ci.org/redhat/jenkins-ci.org.key
+
+    - name: install jenkins
+      yum:
+        name: jenkins
+        update_cache: true
+        state: latest
