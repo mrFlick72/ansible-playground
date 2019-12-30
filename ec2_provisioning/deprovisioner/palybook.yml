@@ -1,0 +1,7 @@
+- hosts: localhost
+  gather_facts: yes
+  vars_files:
+    - ../keys.yml
+  tasks:
+    - name: EC2 Deprovisioning
+      import_tasks: tasks.yml
