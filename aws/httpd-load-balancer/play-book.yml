@@ -1,0 +1,67 @@
+---
+# apache EC2 load balancer provisioning
+
+- hosts: localhost
+  gather_facts: no
+  vars_files:
+    - keys.yml
+  vars:
+    - AWS_EC2_TAG_NAME: balancer
+    - AWS_EC2_INSTANCE_COUNT: 1
+  tasks:
+    - name: load balancer provisioning
+      import_tasks: ../ec2/provisioner.yml
+
+# apache content web server  provisioning
+
+- hosts: localhost
+  gather_facts: no
+  vars_files:
+    - keys.yml
+  vars:
+    - AWS_EC2_TAG_NAME: web-server
+    - AWS_EC2_INSTANCE_COUNT: 2
+  tasks:
+    - name: web server worker provisioning
+      import_tasks: ../ec2/provisioner.yml
+
+# add ec2 instance in inventory
+
+- hosts: localhost
+  gather_facts: no
+  vars_files:
+    - keys.yml
+  tasks:
+    - name: Get Load Balancer EC2 Instances facts
+      ec2_instance_facts:
+        aws_access_key: "{{ AWS_ACCESS_KEY_ID }}"
+        aws_secret_key: "{{ AWS_SECRET_ACCESS_KEY }}"
+        ec2_region: "{{ AWS_REGION }}"
+        filters:
+          tag:Name: balancer
+      register: loadBalancerEc2
+
+    - name: Get Web Server EC2 Instances facts
+      ec2_instance_facts:
+        aws_access_key: "{{ AWS_ACCESS_KEY_ID }}"
+        aws_secret_key: "{{ AWS_SECRET_ACCESS_KEY }}"
+        ec2_region: "{{ AWS_REGION }}"
+        filters:
+          tag:Name: web-server
+      register: webServerEc2
+
+    - name: add Load Balancer EC2 host to inventory
+      add_host:
+        hostname: '{{ item.public_ip }}'
+        groupname: webgroup
+        ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+      loop: '{{ loadBalancerEc2.instances }}'
+
+    - name: add Web Server EC2 host to inventory
+      add_host:
+        hostname: '{{ item.public_ip }}'
+        groupname: webgroup
+        ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+      loop: '{{ webServerEc2.instances }}'
+
+
