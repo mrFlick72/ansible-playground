@@ -38,15 +38,8 @@
         aws_secret_key: "{{ AWS_SECRET_ACCESS_KEY }}"
         ec2_region: "{{ AWS_REGION }}"
         filters:
-          tag:Name: balancer
+          tag:Name: "balancer"
       register: loadBalancerEc2
-
-    - name: add Load Balancer EC2 host to inventory
-      add_host:
-        hostname: '{{ item.public_ip }}'
-        groupname: loadbalancer
-        ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
-      loop: '{{ loadBalancerEc2.instances }}'
 
     - name: Get Web Server EC2 Instances facts
       ec2_instance_facts:
@@ -54,12 +47,20 @@
         aws_secret_key: "{{ AWS_SECRET_ACCESS_KEY }}"
         ec2_region: "{{ AWS_REGION }}"
         filters:
-          tag:Name: web-server
+          tag:Name: "web-server"
       register: webServerEc2
+
+
+    - name: add Load Balancer EC2 host to inventory
+      add_host:
+        hostname: '{{ item.public_ip_address }}'
+        groupname: loadbalancer
+        ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+      loop: '{{ loadBalancerEc2.instances }}'
 
     - name: add Web Server EC2 host to inventory
       add_host:
-        hostname: '{{ item.public_ip }}'
+        hostname: '{{ item.public_ip_address }}'
         groupname: content_server
         ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
       loop: '{{ webServerEc2.instances }}'
@@ -67,7 +68,7 @@
 
 - hosts: content_server
   become: yes
-  remote_user: ec2_user
+  remote_user: ec2-user
   tasks:
     - name: install httpd
       yum:
@@ -87,7 +88,7 @@
 
 - hosts: loadbalancer
   become: yes
-  remote_user: ec2_user
+  remote_user: ec2-user
   tasks:
     - name: install httpd
       yum:
