@@ -1,0 +1,32 @@
+---
+
+- hosts:
+    - master_nodes
+    - worker_nodes
+  become: yes
+  remote_user: ec2-user
+  tasks:
+    - name: set kubernetes repository
+      shell: lookup('file', 'kubernetes-repo')
+      args:
+        executable: /bin/bash
+
+    - name: install docker
+      yum:
+        name: docker
+        state: latest
+
+    - name: install kubelet
+      yum:
+        name: kubelet
+        state: latest
+
+    - name: install kubeadm
+      yum:
+        name: kubeadm
+        state: latest
+
+    - name: install kubectl
+      yum:
+        name: kubectl
+        state: latest
