@@ -4,4 +4,7 @@
   import_playbook: provisioner.yml
 
 - name: cluster setup
-  import_playbook: cluster.yml
+  import_playbook: cluster_setup.yml
+
+- name: cluster init
+  import_playbook: cluster_init.yml

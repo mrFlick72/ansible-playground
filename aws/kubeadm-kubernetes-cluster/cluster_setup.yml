@@ -7,7 +7,11 @@
   remote_user: ec2-user
   tasks:
     - name: set kubernetes repository
-      shell:  "{{ lookup('file', 'kubernetes-repo') }}"
+      shell:  "{{ lookup('file', 'script/kubernetes-repo') }}"
+      args:
+        executable: /bin/bash
+    - name: disabling swap
+      shell:  "{{ lookup('file', 'script/swap_disabling') }}"
       args:
         executable: /bin/bash
 
@@ -44,7 +48,7 @@
         enabled: yes
         state: started
 
-    - name: Start docker service
+    - name: Start kubelet service
       service:
         name: kubelet
         enabled: yes
