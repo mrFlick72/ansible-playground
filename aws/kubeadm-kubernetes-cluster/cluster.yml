@@ -1,4 +1,4 @@
----
+--- # cluster configuration
 
 - hosts:
     - master_nodes
@@ -7,13 +7,20 @@
   remote_user: ec2-user
   tasks:
     - name: set kubernetes repository
-      shell: lookup('file', 'kubernetes-repo')
+      shell:  "{{ lookup('file', 'kubernetes-repo') }}"
       args:
         executable: /bin/bash
+
+    - name: install amazon-linux-extras
+      yum:
+        name: amazon-linux-extras
+        update_cache: true
+        state: latest
 
     - name: install docker
       yum:
         name: docker
+        update_cache: true
         state: latest
 
     - name: install kubelet
@@ -30,3 +37,15 @@
       yum:
         name: kubectl
         state: latest
+
+    - name: Start docker service
+      service:
+        name: docker
+        enabled: yes
+        state: started
+
+    - name: Start docker service
+      service:
+        name: kubelet
+        enabled: yes
+        state: started

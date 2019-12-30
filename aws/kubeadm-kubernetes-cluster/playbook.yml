@@ -1,7 +1,7 @@
 --- # Kubernetes installation with KubeAdm
 
 - name: server provisioning
-  playbook-import: provisioner.yml
+  import_playbook: provisioner.yml
 
 - name: cluster setup
-  playbook-import: cluster.yml
+  import_playbook: cluster.yml
