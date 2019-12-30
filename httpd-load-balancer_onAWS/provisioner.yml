@@ -1,0 +1,25 @@
+--- # AWS provisioning
+
+- name: Provision instance
+  ec2:
+    aws_access_key: "{{ AWS_ACCESS_KEY_ID }}"
+    aws_secret_key: "{{ AWS_SECRET_ACCESS_KEY }}"
+    ec2_region: "{{ AWS_REGION }}"
+    instance_type: "{{ AWS_EC2_INSTANCE_TYPE }}"
+    keypair: "{{ AWS_EC2_INSTANCE_KEYPAIR_NAME }}"
+    image: "{{ AWS_EC2_AMI_TYPE }}"
+    assign_public_ip: yes
+    vpc_subnet_id: "{{ AWS_DEFAULT_VPC_SUBNET }}"
+    group: "{{ AWS_SECURITY_GROUP }}"
+    wait: true
+    volumes:
+      - device_name: /dev/xvda
+        volume_size: "{{ VOLUME_SIZE }}"
+        volume_type: gp2
+        delete_on_termination: true
+    exact_count:  "{{ AWS_EC2_INSTANCE_COUNT }}"
+    count_tag:
+      Name: "{{ AWS_EC2_TAG_NAME }}"
+    instance_tags:
+      Name: "{{ AWS_EC2_TAG_NAME }}"
+  register: ec2
