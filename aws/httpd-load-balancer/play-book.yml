@@ -10,7 +10,7 @@
     - AWS_EC2_INSTANCE_COUNT: 1
   tasks:
     - name: load balancer provisioning
-      import_tasks: ../ec2/provisioner.yml
+      import_tasks: ../ec2/provisioner/tasks.yml
 
 # apache content web server  provisioning
 
@@ -23,7 +23,7 @@
     - AWS_EC2_INSTANCE_COUNT: 2
   tasks:
     - name: web server worker provisioning
-      import_tasks: ../ec2/provisioner.yml
+      import_tasks: ../ec2/provisioner/tasks.yml
 
 # add ec2 instance in inventory
 
@@ -41,6 +41,13 @@
           tag:Name: balancer
       register: loadBalancerEc2
 
+    - name: add Load Balancer EC2 host to inventory
+      add_host:
+        hostname: '{{ item.public_ip }}'
+        groupname: loadbalancer
+        ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+      loop: '{{ loadBalancerEc2.instances }}'
+
     - name: Get Web Server EC2 Instances facts
       ec2_instance_facts:
         aws_access_key: "{{ AWS_ACCESS_KEY_ID }}"
@@ -50,18 +57,54 @@
           tag:Name: web-server
       register: webServerEc2
 
-    - name: add Load Balancer EC2 host to inventory
-      add_host:
-        hostname: '{{ item.public_ip }}'
-        groupname: webgroup
-        ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
-      loop: '{{ loadBalancerEc2.instances }}'
-
     - name: add Web Server EC2 host to inventory
       add_host:
         hostname: '{{ item.public_ip }}'
-        groupname: webgroup
+        groupname: content_server
         ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
       loop: '{{ webServerEc2.instances }}'
 
+
+- hosts: content_server
+  become: yes
+  remote_user: ec2_user
+  tasks:
+    - name: install httpd
+      yum:
+        name: httpd
+        state: latest
+    - name: Start service httpd, if not started
+      service:
+        name: httpd
+        state: started
+
+    - name: Copy file with owner and permissions
+      copy:
+        owner: apache
+        group: apache
+        src: index.html
+        dest: /var/www/html
+
+- hosts: loadbalancer
+  become: yes
+  remote_user: ec2_user
+  tasks:
+    - name: install httpd
+      yum:
+        name: httpd
+        state: latest
+
+    - name: Copy file with owner and permissions
+      template:
+        owner: apache
+        group: apache
+        src: httpd.conf
+        dest: /etc/httpd/conf/httpd.conf
+        follow: yes
+
+    - name: Start service httpd, if not started
+      service:
+        name: httpd
+        enabled: yes
+        state: started
 
