@@ -4,17 +4,6 @@
   become: yes
   remote_user: ec2-user
   tasks:
-    - name: set kubernetes repository
-      shell:  "{{ lookup('file', 'script/Kubernetes_in_same_group') }}"
-      args:
-        executable: /bin/bash
-
-    - name: restart service kubelet,and also issue daemon-reload to pick up config changes
-      systemd:
-        state: restarted
-        daemon_reload: yes
-        name: kubelet
-
     - name: kubeadm init with pod network cidr confiuration
       shell: kubeadm init --pod-network-cidr=10.244.0.0/16
       args:
