@@ -8,3 +8,6 @@
 
 - name: cluster init
   import_playbook: cluster_init.yml
+
+- name: cluster init
+  import_playbook: ingress_controller_setup.yml

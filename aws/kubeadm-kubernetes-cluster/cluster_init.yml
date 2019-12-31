@@ -34,13 +34,3 @@
       shell:  "{{ kubeadm_output }}" # WIB I should parse the output and find the right command
       args:
         executable: /bin/bash
-
-    - name: install Flannel
-      shell:  kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
-      args:
-        executable: /bin/bash
-
-    - name: install Nginix Ingress Controller
-      shell:
-      args:
-        executable: /bin/bash
