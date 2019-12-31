@@ -3,6 +3,9 @@
 - name: server provisioning
   import_playbook: provisioner.yml
 
+- name: server provisioning
+  import_playbook: make_inventory.yml
+
 - name: cluster setup
   import_playbook: cluster_setup.yml
 

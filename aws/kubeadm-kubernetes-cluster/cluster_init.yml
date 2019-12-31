@@ -10,7 +10,9 @@
         executable: /bin/bash
       register: kubeadm_output
 
-    - name: set kubernetes repository
+    - name: admin.conf $HOME/.kube/config
+      become: no
+      become_method: sudo
       shell:  "{{ lookup('file', 'script/kubernetes_admin_conf') }}"
       args:
         executable: /bin/bash
@@ -20,6 +22,6 @@
   remote_user: ec2-user
   tasks:
     - name: join to the cluster
-      shell:  "{{ kubeadm_output }}" # WIB I should parse the output and find the right command
+      shell: $(cat "{{ kubeadm_output }}" | grep  -A 2 "kubeadm join")
       args:
         executable: /bin/bash
