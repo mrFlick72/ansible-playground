@@ -30,13 +30,11 @@
     - name: install amazon-linux-extras
       yum:
         name: amazon-linux-extras
-        update_cache: true
         state: latest
 
     - name: install docker
       yum:
         name: docker
-        update_cache: true
         state: latest
 
     - name: install kubelet
