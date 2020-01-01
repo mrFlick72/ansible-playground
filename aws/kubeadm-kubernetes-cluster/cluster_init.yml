@@ -8,7 +8,7 @@
       shell: kubeadm init --pod-network-cidr=10.244.0.0/16
       args:
         executable: /bin/bash
-      register: kubeadm_output
+      register: kubeadm_init_output
 
     - name: admin.conf $HOME/.kube/config
       become: no
@@ -17,11 +17,25 @@
       args:
         executable: /bin/bash
 
+    - name: echo
+      debug:
+        msg: "{{ kubeadm_init_output['stdout'] }}"
+
+    - name: prepare kubeadm join command
+      shell: echo "{{ kubeadm_init_output['stdout']  }}" | grep -A 2 "kubeadm join"
+      args:
+        executable: /bin/bash
+      register: kubeadm_join_command
+
+    - name: echo
+      debug:
+        msg: "{{ kubeadm_join_command['stdout_lines'][0] }}"
+
 - hosts: worker_nodes
   become: yes
   remote_user: ec2-user
   tasks:
     - name: join to the cluster
-      shell: $(cat "{{ kubeadm_output }}" | grep  -A 2 "kubeadm join")
+      shell: "sudo {{ hostvars[groups['master_nodes'][0]]['kubeadm_join_command']['stdout_lines'][0] }}"
       args:
         executable: /bin/bash
