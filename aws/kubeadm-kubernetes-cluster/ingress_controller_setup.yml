@@ -9,14 +9,10 @@
         executable: /bin/bash
 
     - name: install Nginix Ingress Controller Mandatory
-      shell: kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/provider/cloud-generic.yaml
-      args:
-        executable: /bin/bash
-
-    - name: install Nginix Ingress Controller Mandatory
       shell: kubectl apply -f  "{{ lookup('file', 'script/ingress_mandatory.yml') }}"
       args:
         executable: /bin/bash
+
     - name: install Nginix Ingress Controller deployment
       shell: kubectl apply -f  "{{ lookup('file', 'script/ingress_controller.yml') }}"
       args:

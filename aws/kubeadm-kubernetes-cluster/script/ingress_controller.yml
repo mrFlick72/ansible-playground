@@ -9,6 +9,9 @@ metadata:
 spec:
   type: NodePort
   externalIPs:
+    {% for host in groups['master_nodes'] %}
+    - "{{ host }}"
+    {% endfor %}
     {% for host in groups['worker_nodes'] %}
     - "{{ host }}"
     {% endfor %}
