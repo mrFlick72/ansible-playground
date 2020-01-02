@@ -28,6 +28,11 @@
       args:
         executable: /bin/bash
 
+    - name: disabling swap
+      shell:  "{{ lookup('file', 'script/ip_table_config') }}"
+      args:
+        executable: /bin/bash
+
     - name: install amazon-linux-extras
       yum:
         name: amazon-linux-extras
