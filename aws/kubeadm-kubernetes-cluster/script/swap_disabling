@@ -1,2 +1,2 @@
-sudo sed -i '/swap/d' /etc/fstab
-sudo swapoff -a
+sed -i '/swap/d' /etc/fstab
+swapoff -a

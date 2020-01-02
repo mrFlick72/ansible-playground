@@ -14,3 +14,11 @@
 
 - name: cluster init
   import_playbook: ingress_controller_setup.yml
+
+- hosts: master_nodes
+  remote_user: ec2-user
+  tasks:
+    - name: install sample application
+      shell:  kubectl apply -f https://raw.githubusercontent.com/mrFlick72/ansible-playground/master/kubernetes-sample/legacy-webapp.yml
+      args:
+        executable: /bin/bash

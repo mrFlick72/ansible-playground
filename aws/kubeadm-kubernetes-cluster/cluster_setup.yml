@@ -22,6 +22,7 @@
       shell:  "{{ lookup('file', 'script/kubernetes-repo') }}"
       args:
         executable: /bin/bash
+
     - name: disabling swap
       shell:  "{{ lookup('file', 'script/swap_disabling') }}"
       args:
