@@ -1,0 +1,26 @@
+---
+# apache EC2 load balancer provisioning
+
+- hosts: localhost
+  gather_facts: no
+  vars_files:
+    - keys.yml
+  vars:
+    - AWS_EC2_TAG_NAME: balancer
+    - AWS_EC2_INSTANCE_COUNT: 1
+  tasks:
+    - name: load balancer provisioning
+      import_tasks: ../ec2/provisioner/tasks.yml
+
+# apache content web server  provisioning
+
+- hosts: localhost
+  gather_facts: no
+  vars_files:
+    - keys.yml
+  vars:
+    - AWS_EC2_TAG_NAME: web-server
+    - AWS_EC2_INSTANCE_COUNT: 2
+  tasks:
+    - name: web server worker provisioning
+      import_tasks: ../ec2/provisioner/tasks.yml
