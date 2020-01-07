@@ -1,0 +1,30 @@
+---
+# master_nodes provisioning
+
+- hosts: localhost
+  gather_facts: no
+  vars_files:
+    - keys.yml
+    - aws_credentials_keys.yml
+  vars:
+    - AWS_EC2_TAG_NAME: swarm_master_nodes
+    - AWS_EC2_INSTANCE_COUNT: 1
+    - AWS_EC2_INSTANCE_TYPE: "{{ MASTER_AWS_EC2_INSTANCE_TYPE }}"
+  tasks:
+    - name: master nodes provisioning
+      import_tasks: ../ec2/provisioner/tasks.yml
+
+# worker_nodes provisioning
+
+- hosts: localhost
+  gather_facts: no
+  vars_files:
+    - keys.yml
+    - aws_credentials_keys.yml
+  vars:
+    - AWS_EC2_TAG_NAME: swarm_worker_nodes
+    - AWS_EC2_INSTANCE_COUNT: 2
+    - AWS_EC2_INSTANCE_TYPE: "{{ WORKER_AWS_EC2_INSTANCE_TYPE }}"
+  tasks:
+    - name: worker nodes provisioning
+      import_tasks: ../ec2/provisioner/tasks.yml
