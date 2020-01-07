@@ -69,3 +69,8 @@
       shell:  "{{ lookup('file', 'script/ip_table_config') }}"
       args:
         executable: /bin/bash
+
+    - name: docker runnable as regular user
+      shell: usermod -aG docker ec2-user
+      args:
+        executable: /bin/bash
