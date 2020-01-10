@@ -28,6 +28,21 @@
       args:
         executable: /bin/bash
 
+    - name: install yum-utils
+      yum:
+        name: yum-utils
+        state: latest
+
+    - name: install device-mapper-persistent-data
+      yum:
+        name: device-mapper-persistent-data
+        state: latest
+
+    - name: install lvm2
+      yum:
+        name: lvm2
+        state: latest
+
     - name: install amazon-linux-extras
       yum:
         name: amazon-linux-extras
