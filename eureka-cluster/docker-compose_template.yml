@@ -1,0 +1,24 @@
+version: '3.1'
+
+
+services:
+{% for eureka_instance in eureka_instances %}
+  eureka{{ eureka_instance }}:
+    image: mrflick72/eureka-server:latest
+    ports:
+      - "876{{ eureka_instance }}:876{{ eureka_instance }}"
+    restart: always
+    environment:
+      - server.port=876{{ eureka_instance }}
+      - eureka.instance.hostname=eureka{{ eureka_instance }}
+      - eureka.client.registerWithEureka=false
+      - eureka.client.fetchRegistry=false
+      - eureka.instance.preferIpAddress=true
+      - eureka.client.serviceUrl.defaultZone={{ eurekas['stdout_lines'][0] }}
+    networks:
+      - discovery
+{% endfor %}
+
+networks:
+  discovery:
+    driver: bridge

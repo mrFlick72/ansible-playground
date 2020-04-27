@@ -1,0 +1,28 @@
+--- #setup httpd with content
+
+- hosts: localhost
+  gather_facts: no
+  vars:
+    - eureka_instances: [1,2,3]
+  tasks:
+    - name: set eureka servers
+      shell: |-
+        eureka_instances=(1 2 3)
+        for instance in "${eureka_instances[@]}"
+        do
+          eurekas+="http://eureka${instance}:876${instance}/eureka/,"
+        done
+
+        echo $eurekas | sed 's/.$//'
+      args:
+        executable: /bin/bash
+      register: eurekas
+
+    - name: debug
+      debug:
+        msg: "{{ eurekas['stdout_lines'] }}"
+    - name: compile docker compose with eureka cluster configured
+      template:
+        src: docker-compose_template.yml
+        dest: docker-compose.yml
+        follow: yes
