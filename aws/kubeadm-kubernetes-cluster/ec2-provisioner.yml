@@ -3,27 +3,81 @@
   vars_files:
     - keys.yml
   tasks:
-    - name: Master Provision Instances
-      ec2:
+    - name: master sg
+      ec2_group:
         aws_access_key: "{{ aws_access_key_id }}"
         aws_secret_key: "{{ aws_secret_access_key }}"
-        ec2_region: "{{ aws_region }}"
+        region: "{{ aws_region }}"
 
-        zone: "{{ aws.ec2.zone }}"
-        instance_type: "{{ aws.ec2.instance_type }}"
-        image: "{{ aws.ec2.ami }}"
-        keypair: "{{ aws.ec2.keypair }}"
-        assign_public_ip: yes
-        vpc_subnet_id: "{{ aws.vpc.subnet_id }}"
-        group_id:
-          - "{{ aws.security_group.k8s.master }}"
-          - "{{ aws.security_group.web }}"
-        exact_count:  "{{ aws.ec2.master.instances }}"
-        wait: true
-        count_tag:
-          Name: "{{ aws.ec2.master.name }}"
-        instance_tags:
-          Name: "{{ aws.ec2.master.name }}"
+        name: master-sg
+        description: master sg
+        vpc_id: "{{ aws.vpc.id }}"
+        rules:
+          - proto: tcp
+            ports:
+              - 6443
+              - 2379 - 2380
+              - 10251
+              - 10255
+              - 10250
+              - 10252
+            cidr_ip: 0.0.0.0/0
+        register: master-sg
+
+    - name: worker sg
+      ec2_group:
+        aws_access_key: "{{ aws_access_key_id }}"
+        aws_secret_key: "{{ aws_secret_access_key }}"
+        region: "{{ aws_region }}"
+
+        name: worker-sg
+        description: master sg
+        vpc_id: "{{ aws.vpc.id }}"
+        rules:
+          - proto: tcp
+            ports:
+              - 10250
+              - 30000-32767
+            cidr_ip: 0.0.0.0/0
+        register: worker-sg
+
+    - name: web sg
+      ec2_group:
+        aws_access_key: "{{ aws_access_key_id }}"
+        aws_secret_key: "{{ aws_secret_access_key }}"
+        region: "{{ aws_region }}"
+
+        name: balancer-sg
+        description: balancer sg
+        vpc_id: "{{ aws.vpc.id }}"
+        rules:
+          - proto: tcp
+            ports:
+              - 80
+            cidr_ip: 0.0.0.0/0
+        register: balancer-sg
+
+  - name: Master Provision Instances
+    ec2:
+      aws_access_key: "{{ aws_access_key_id }}"
+      aws_secret_key: "{{ aws_secret_access_key }}"
+      ec2_region: "{{ aws_region }}"
+
+      zone: "{{ aws.ec2.zone }}"
+      instance_type: "{{ aws.ec2.instance_type }}"
+      image: "{{ aws.ec2.ami }}"
+      keypair: "{{ aws.ec2.keypair }}"
+      assign_public_ip: yes
+      vpc_subnet_id: "{{ aws.vpc.subnet_id }}"
+      group_id:
+        - "{{ master-sg['group_id'] }}"
+        - "{{ balancer-sg['group_id'] }}"
+      exact_count:  "{{ aws.ec2.master.instances }}"
+      wait: true
+      count_tag:
+        Name: "{{ aws.ec2.master.name }}"
+      instance_tags:
+        Name: "{{ aws.ec2.master.name }}"
 
     - name: Workers Provision Instances
       ec2:
@@ -38,8 +92,8 @@
         assign_public_ip: yes
         vpc_subnet_id: "{{ aws.vpc.subnet_id }}"
         group_id:
-          - "{{ aws.security_group.k8s.worker }}"
-          - "{{ aws.security_group.web }}"
+          - "{{ worker-sg['group_id'] }}"
+          - "{{ balancer-sg['group_id'] }}"
         exact_count:  "{{ aws.ec2.worker.instances }}"
         wait: true
         count_tag:
