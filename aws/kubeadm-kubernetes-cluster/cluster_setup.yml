@@ -1,8 +1,8 @@
 --- # cluster configuration
 
 - hosts:
-    - master_nodes
-    - worker_nodes
+    - master
+    - worker
   become: yes
   gather_facts: no
   remote_user: ec2-user
@@ -13,8 +13,8 @@
         timeout: 180
 
 - hosts:
-    - master_nodes
-    - worker_nodes
+    - master
+    - worker
   become: yes
   remote_user: ec2-user
   tasks:

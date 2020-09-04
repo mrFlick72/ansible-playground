@@ -1,6 +1,6 @@
---- # install CoreOS Flannel and nginix ingress controller
+--- # install CoreOS Flannel and ngnix ingress controller
 
-- hosts: master_nodes
+- hosts: master
   remote_user: ec2-user
   tasks:
     - name: install Flannel
@@ -9,22 +9,22 @@
         executable: /bin/bash
 
     - name: install Nginix Ingress Controller Mandatory
-      shell:  kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/mandatory.yaml
+      shell:  kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/nginx-0.30.0/deploy/static/mandatory.yaml
       args:
         executable: /bin/bash
 
     - name: install Nginix Ingress Controller deployment
-      shell: kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/provider/baremetal/service-nodeport.yaml
+      shell: kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/nginx-0.30.0/deploy/static/provider/baremetal/service-nodeport.yaml
       args:
         executable: /bin/bash
 
+    - name: ingress node port
+      shell: |-
+        kubectl get svc -n ingress-nginx | grep NodePort | awk '{ print $5 }' | awk -F , ' { print $1 } ' | awk -F : ' { print $2 } ' | awk -F / ' { print $1 } '
+      args:
+        executable: /bin/bash
+      register: kube_ingress_nodeport
 
-#    - name: install Nginix Ingress Controller Mandatory
-#      shell: kubectl apply -f  "{{ lookup('file', 'script/ingress_mandatory.yml') }}"
-#      args:
-#        executable: /bin/bash
-#
-#    - name: install Nginix Ingress Controller deployment
-#      shell: kubectl apply -f  "{{ lookup('file', 'script/ingress_controller.yml') }}"
-#      args:
-#        executable: /bin/bash
+    - name: logs
+      debug:
+        msg: "ingress service nodeport: {{ kube_ingress_nodeport }}"

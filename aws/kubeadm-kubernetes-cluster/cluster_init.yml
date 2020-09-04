@@ -1,6 +1,6 @@
 --- # cluster configuration
 
-- hosts: master_nodes
+- hosts: master
   become: yes
   remote_user: ec2-user
   tasks:
@@ -22,7 +22,7 @@
         msg: "{{ kubeadm_init_output['stdout'] }}"
 
     - name: prepare kubeadm join command
-      shell: echo "{{ kubeadm_init_output['stdout']  }}" | grep -A 2 "kubeadm join"
+      shell: echo "{{ kubeadm_init_output['stdout'] }}" | grep -A 2 "kubeadm join"
       args:
         executable: /bin/bash
       register: kubeadm_join_command
@@ -31,11 +31,11 @@
       debug:
         msg: "{{ kubeadm_join_command['stdout_lines'][0] }}"
 
-- hosts: worker_nodes
+- hosts: worker
   become: yes
   remote_user: ec2-user
   tasks:
     - name: join to the cluster
-      shell: "sudo {{ hostvars[groups['master_nodes'][0]]['kubeadm_join_command']['stdout_lines'][0] }}"
+      shell: "sudo {{ hostvars[groups['master'][0]]['kubeadm_join_command']['stdout_lines'][0] }}"
       args:
         executable: /bin/bash
