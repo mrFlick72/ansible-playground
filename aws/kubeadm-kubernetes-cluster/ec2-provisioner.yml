@@ -57,27 +57,27 @@
             cidr_ip: 0.0.0.0/0
         register: balancer-sg
 
-  - name: Master Provision Instances
-    ec2:
-      aws_access_key: "{{ aws_access_key_id }}"
-      aws_secret_key: "{{ aws_secret_access_key }}"
-      ec2_region: "{{ aws_region }}"
+    - name: Master Provision Instances
+      ec2:
+        aws_access_key: "{{ aws_access_key_id }}"
+        aws_secret_key: "{{ aws_secret_access_key }}"
+        ec2_region: "{{ aws_region }}"
 
-      zone: "{{ aws.ec2.zone }}"
-      instance_type: "{{ aws.ec2.instance_type }}"
-      image: "{{ aws.ec2.ami }}"
-      keypair: "{{ aws.ec2.keypair }}"
-      assign_public_ip: yes
-      vpc_subnet_id: "{{ aws.vpc.subnet_id }}"
-      group_id:
-        - "{{ master-sg['group_id'] }}"
-        - "{{ balancer-sg['group_id'] }}"
-      exact_count:  "{{ aws.ec2.master.instances }}"
-      wait: true
-      count_tag:
-        Name: "{{ aws.ec2.master.name }}"
-      instance_tags:
-        Name: "{{ aws.ec2.master.name }}"
+        zone: "{{ aws.ec2.zone }}"
+        instance_type: "{{ aws.ec2.instance_type }}"
+        image: "{{ aws.ec2.ami }}"
+        keypair: "{{ aws.ec2.keypair }}"
+        assign_public_ip: yes
+        vpc_subnet_id: "{{ aws.vpc.subnet_id }}"
+        group_id:
+          - "{{ master-sg['group_id'] }}"
+          - "{{ balancer-sg['group_id'] }}"
+        exact_count:  "{{ aws.ec2.master.instances }}"
+        wait: true
+        count_tag:
+          Name: "{{ aws.ec2.master.name }}"
+        instance_tags:
+          Name: "{{ aws.ec2.master.name }}"
 
     - name: Workers Provision Instances
       ec2:
