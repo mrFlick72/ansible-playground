@@ -1,24 +1,25 @@
---- # Kubernetes installation with KubeAdm
+--- # play book for build a new onlyone-portal platform server
 
+# provisioning of EC2 Instances
 - name: server provisioning
-  import_playbook: provisioner.yml
+  import_playbook: ec2-provisioner.yml
 
-- name: make dynamic inventory
+# make inventory
+- name: server provisioning
   import_playbook: make_inventory.yml
 
-- name: cluster setup
+# setup platform instances
+- name: Configure EC2 Instances
   import_playbook: cluster_setup.yml
 
-- name: cluster init
+# setup platform instances
+- name: Configure EC2 Instances
   import_playbook: cluster_init.yml
 
-- name: cluster init
+# setup platform instances
+- name: Configure EC2 Instances
   import_playbook: ingress_controller_setup.yml
 
-- hosts: master_nodes
-  remote_user: ec2-user
-  tasks:
-    - name: install sample application
-      shell:  kubectl apply -f https://raw.githubusercontent.com/mrFlick72/ansible-playground/master/kubernetes-sample/legacy-webapp.yml
-      args:
-        executable: /bin/bash
+# setup platform instances
+- name: Configure Balancer
+  import_playbook: balancer.yml
