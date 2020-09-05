@@ -19,3 +19,7 @@
 # setup platform instances
 - name: Configure EC2 Instances
   import_playbook: ingress_controller_setup.yml
+
+# setup platform instances
+- name: Configure Balancer
+  import_playbook: balancer.yml

@@ -1,0 +1,22 @@
+- hosts: master
+  become: yes
+  remote_user: ec2-user
+  tasks:
+    - name: install httpd
+      yum:
+        name: httpd
+        state: latest
+
+    - name: Copy file with owner and permissions
+      template:
+        owner: apache
+        group: apache
+        src: script/httpd.conf
+        dest: /etc/httpd/conf/httpd.conf
+        follow: yes
+
+    - name: Start service httpd, if not started
+      service:
+        name: httpd
+        enabled: yes
+        state: started
