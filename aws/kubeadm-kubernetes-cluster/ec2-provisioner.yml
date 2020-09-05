@@ -3,6 +3,31 @@
   vars_files:
     - keys.yml
   tasks:
+    - name: get subnet info
+      ec2_vpc_subnet_info:
+        subnet_ids: "{{ aws.vpc.subnet_id }}"
+      register: subnetInfo
+
+    - name: debug
+      debug:
+        msg: "{{ subnetInfo }}"
+
+    - name: ssh sg
+      ec2_group:
+        aws_access_key: "{{ aws_access_key_id }}"
+        aws_secret_key: "{{ aws_secret_access_key }}"
+        region: "{{ aws_region }}"
+
+        name: ssh-sg
+        description: master sg
+        vpc_id: "{{ aws.vpc.id }}"
+        rules:
+          - proto: tcp
+            ports:
+              - 22
+            cidr_ip: 0.0.0.0/0
+      register: sshSecurityGroup
+
     - name: master sg
       ec2_group:
         aws_access_key: "{{ aws_access_key_id }}"
@@ -21,8 +46,8 @@
               - 10255
               - 10250
               - 10252
-            cidr_ip: 0.0.0.0/0
-        register: master-sg
+            cidr_ip: "{{ subnetInfo.subnets[0]['cidr_block'] }}"
+      register: masterSecurityGroup
 
     - name: worker sg
       ec2_group:
@@ -38,8 +63,8 @@
             ports:
               - 10250
               - 30000-32767
-            cidr_ip: 0.0.0.0/0
-        register: worker-sg
+            cidr_ip: "{{ subnetInfo.subnets[0]['cidr_block'] }}"
+      register: workerSecurityGroup
 
     - name: web sg
       ec2_group:
@@ -55,7 +80,7 @@
             ports:
               - 80
             cidr_ip: 0.0.0.0/0
-        register: balancer-sg
+      register: balancerSecurityGroup
 
     - name: Master Provision Instances
       ec2:
@@ -70,8 +95,9 @@
         assign_public_ip: yes
         vpc_subnet_id: "{{ aws.vpc.subnet_id }}"
         group_id:
-          - "{{ master-sg['group_id'] }}"
-          - "{{ balancer-sg['group_id'] }}"
+          - "{{ sshSecurityGroup['group_id'] }}"
+          - "{{ masterSecurityGroup['group_id'] }}"
+          - "{{ balancerSecurityGroup['group_id'] }}"
         exact_count:  "{{ aws.ec2.master.instances }}"
         wait: true
         count_tag:
@@ -92,8 +118,9 @@
         assign_public_ip: yes
         vpc_subnet_id: "{{ aws.vpc.subnet_id }}"
         group_id:
-          - "{{ worker-sg['group_id'] }}"
-          - "{{ balancer-sg['group_id'] }}"
+          - "{{ sshSecurityGroup['group_id'] }}"
+          - "{{ workerSecurityGroup['group_id'] }}"
+          - "{{ balancerSecurityGroup['group_id'] }}"
         exact_count:  "{{ aws.ec2.worker.instances }}"
         wait: true
         count_tag:
