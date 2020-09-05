@@ -62,8 +62,14 @@
           - proto: tcp
             ports:
               - 10250
+              - 10255
               - 30000-32767
             cidr_ip: "{{ subnetInfo.subnets[0]['cidr_block'] }}"
+          - proto: udp
+              ports:
+                - 8285
+                - 8472
+              cidr_ip: "{{ subnetInfo.subnets[0]['cidr_block'] }}"
       register: workerSecurityGroup
 
     - name: web sg
