@@ -39,4 +39,4 @@ ansible_ssh_private_key_file: it is the path to the key pair downloaded form AWS
 
 The whole architecture in a picture:
 
-[](8s-lab.png)
+[](k8s-lab.png)
