@@ -1,4 +1,4 @@
-#kubeadm-kubernetes-cluster
+# kubeadm-kubernetes-cluster
 
 this play book is thought to provide a simple kubernetes cluster for test.
 It provides a lab environment to test applications in a real multi node cluster.
