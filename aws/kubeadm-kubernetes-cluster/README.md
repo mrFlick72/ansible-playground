@@ -36,3 +36,7 @@ aws:
 
 ansible_ssh_private_key_file: it is the path to the key pair downloaded form AWS you can get one during an instance creation and reuse or create a new one on AWS web console
 ```  
+
+The whole architecture in a picture:
+
+[](https://github.com/mrFlick72/ansible-playground/blob/master/aws/kubeadm-kubernetes-cluster/k8s-lab.png)
