@@ -22,9 +22,9 @@ aws:
     worker:
       instances: it can be what ever you want as soon as it is a positive numebr for testing 2 or 3 is a good option
       name: it is the name provided to the instance making it simple to search in the AWS console
-    instance_type: it describe the size of your instance for instance like ``t2.medium``
+    instance_type: it describe the size of your instance for instance like t2.medium
     keypair: it is the name of aws keypair neede to ansible in roder to connect via ssh and configure the cluster for you
-    zone: it is the availavility zone in which you want install the cluster an availability zone example can be ``eu-central-1b``
+    zone: it is the availavility zone in which you want install the cluster an availability zone example can be eu-central-1b
     ami: it is the ami id you can get this id can be get from aws console during the lunch of an instance please pick an amazon linux 2 isntance ami 
     volume:
       size: 8
