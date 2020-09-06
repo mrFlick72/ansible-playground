@@ -6,7 +6,7 @@ As requirement, you should have installed the AWS CLI, you should have access ke
  provision EC2 instances, and Ansible on your machine. In order to run the playbook the command is very straightforward: 
  ```ansible-playbook playbook.yml ```  
  
- In order to configure tall the needed you should rename sample_key.yml in key.yml filling all the needed keys. let me explain how to do that
+ In order to configure tall the needed you should rename sample_key.yml in key.yml filling all the needed keys. let me explain how to do
  
  ```yaml
 
